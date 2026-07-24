@@ -111,6 +111,14 @@ section{padding:4rem 1.25rem}
 /* Especialidades */
 .esp-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:0 10px 28px rgba(8,22,48,.12);margin-bottom:2rem;background:#000}
 .esp-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.esp-video-link{display:block;position:relative;width:100%;height:100%}
+.esp-video-link img{width:100%;height:100%;object-fit:cover;display:block}
+.esp-video-link .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,22,48,.28);transition:background .2s}
+.esp-video-link:hover .play{background:rgba(8,22,48,.45)}
+.esp-video-link .play span{width:78px;height:78px;border-radius:50%;background:rgba(196,48,43,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:transform .2s}
+.esp-video-link:hover .play span{transform:scale(1.08)}
+.esp-video-link .play span::after{content:'';border-style:solid;border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff;margin-left:5px}
+.esp-video-link .caption{position:absolute;left:0;right:0;bottom:0;padding:.9rem 1.2rem;background:linear-gradient(0deg,rgba(8,22,48,.85),transparent);color:#fff;font-size:.9rem;font-weight:700}
 .esp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.4rem}
 .esp{background:#fff;border:1px solid var(--line);border-top:6px solid var(--gold);border-radius:10px;padding:1.7rem;transition:transform .2s,box-shadow .2s}
 .esp:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(8,22,48,.12)}
@@ -272,7 +280,11 @@ footer a:hover{color:var(--gold);opacity:1}
       <h2>Nuestras Especialidades</h2>
     </div>
     <div class="esp-video">
-      <iframe title="Especialidades INCOSAF" src="https://www.youtube.com/embed/He264DqC-4w?autoplay=1&mute=1&loop=1&playlist=He264DqC-4w&controls=1&rel=0&modestbranding=1" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+      <a class="esp-video-link" href="https://www.youtube.com/watch?v=He264DqC-4w" target="_blank" rel="noopener">
+        <img src="https://img.youtube.com/vi/He264DqC-4w/maxresdefault.jpg" alt="Video de las especialidades INCOSAF" loading="lazy">
+        <span class="play"><span></span></span>
+        <span class="caption">▶ Ver video de nuestras especialidades en YouTube</span>
+      </a>
     </div>
     <div class="esp-grid">
       <article class="esp">
