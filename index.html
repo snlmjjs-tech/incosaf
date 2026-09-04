@@ -201,6 +201,7 @@ footer a:hover{color:var(--gold);opacity:1}
     <button class="hamb" aria-label="Abrir menú" onclick="document.getElementById('links').classList.toggle('open')">☰</button>
     <div class="navlinks" id="links">
       <a href="#nosotros">Nosotros</a>
+      <a href="#noticias">Noticias</a>
       <a href="#especialidades">Especialidades</a>
       <a href="#documentos">Documentos</a>
       <a href="#comunidad">Comunidad</a>
@@ -429,6 +430,7 @@ footer a:hover{color:var(--gold);opacity:1}
       <h4>Enlaces</h4>
       <ul>
         <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#noticias">Noticias</a></li>
         <li><a href="#especialidades">Especialidades</a></li>
         <li><a href="#documentos">Documentos</a></li>
         <li><a href="#contacto">Contacto</a></li>
@@ -494,6 +496,79 @@ window.__heroCarrusel = crearCarrusel({
   dots: document.getElementById('dots'),
   intervalMs: 3000
 });
+</script>
+
+<script type="module">
+/* ============================================================
+   NOTICIAS Y FOTOS — se leen del panel de gestión (incosafweb-panel)
+   Mismo proyecto de Firebase que usa ese panel para publicar; acá
+   solo se lee en tiempo real (las reglas de Firestore permiten
+   lectura pública de estas colecciones; solo el panel, con sesión
+   iniciada, puede escribir). No requiere login en esta página.
+   ============================================================ */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getFirestore, collection, query, orderBy, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDrgpo2idgpGyqvebmSvuq50DjkKTdrxsA",
+  authDomain: "incosaf-web-panel.firebaseapp.com",
+  projectId: "incosaf-web-panel",
+  storageBucket: "incosaf-web-panel.firebasestorage.app",
+  messagingSenderId: "829646227803",
+  appId: "1:829646227803:web:942a204e3ce5ad08f2f27e"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtFecha(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${parseInt(d,10)} ${meses[parseInt(m,10)-1]} ${y}`;
+}
+
+// ---------- Noticias ----------
+const noticiasQ = query(collection(db,'noticias'), orderBy('creadoEn','desc'));
+onSnapshot(noticiasQ, snap=>{
+  const grid = document.getElementById('noticiasGrid');
+  const empty = document.getElementById('noticiasEmpty');
+  if(!grid) return;
+  const noticias = snap.docs.map(d=>d.data());
+  empty.style.display = noticias.length ? 'none' : '';
+  grid.innerHTML = noticias.map(n=>`
+    <article class="noticia-card">
+      ${n.imagenBase64 ? `<img src="${n.imagenBase64}" alt="">` : ''}
+      <div class="body">
+        <div class="fecha">${fmtFecha(n.fecha)}</div>
+        <h3>${escapeHtml(n.titulo||'')}</h3>
+        <p>${escapeHtml(n.texto||'')}</p>
+      </div>
+    </article>
+  `).join('');
+}, err=>console.error('No se pudieron cargar las noticias', err));
+
+// ---------- Fotos del panel (se suman al banner rotativo del héroe) ----------
+const fotosQ = query(collection(db,'fotos'), orderBy('creadoEn','desc'));
+onSnapshot(fotosQ, snap=>{
+  const cont = document.getElementById('slides');
+  if(!cont) return;
+  cont.querySelectorAll('img.dynamic-foto').forEach(im=>im.remove());
+  snap.docs.forEach(d=>{
+    const f = d.data();
+    if(!f.imagenBase64) return;
+    const img = document.createElement('img');
+    img.className = 'dynamic-foto';
+    img.alt = f.alt || '';
+    img.src = f.imagenBase64;
+    cont.appendChild(img);
+  });
+  if(window.__heroCarrusel) window.__heroCarrusel.iniciar();
+}, err=>console.error('No se pudieron cargar las fotos', err));
 </script>
 </body>
 </html>
