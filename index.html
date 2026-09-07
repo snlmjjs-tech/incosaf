@@ -110,13 +110,27 @@ section{padding:4rem 1.25rem}
 
 /* Noticias */
 .noticias-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.4rem}
-.noticia-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(8,22,48,.06)}
+.noticia-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(8,22,48,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;text-align:left;font:inherit;color:inherit;display:block;width:100%;padding:0}
+.noticia-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(8,22,48,.12)}
 .noticia-card img{width:100%;height:170px;object-fit:cover;display:block}
 .noticia-card .body{padding:1.3rem}
 .noticia-card .fecha{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-soft);font-weight:800;margin-bottom:.4rem}
 .noticia-card h3{font-family:'Zilla Slab',serif;color:var(--navy);font-size:1.1rem;margin-bottom:.5rem}
-.noticia-card p{font-size:.9rem;color:#3c445a;white-space:pre-wrap}
+.noticia-card p{font-size:.9rem;color:#3c445a;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.noticia-card .leer-mas{display:block;margin-top:.6rem;font-size:.82rem;font-weight:800;color:var(--navy)}
 .noticias-empty{font-size:.9rem;color:#5a6480;text-align:center;padding:1.5rem 0}
+
+/* Modal de noticia */
+.noticia-modal-bg{display:none;position:fixed;inset:0;background:rgba(8,22,48,.75);z-index:100;align-items:center;justify-content:center;padding:1.25rem}
+.noticia-modal-bg.open{display:flex}
+.noticia-modal{position:relative;background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.noticia-modal img{width:100%;max-height:280px;object-fit:cover;display:block}
+.noticia-modal .body{padding:1.6rem}
+.noticia-modal .fecha{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-soft);font-weight:800;margin-bottom:.5rem}
+.noticia-modal h3{font-family:'Zilla Slab',serif;color:var(--navy);font-size:1.35rem;margin-bottom:.9rem}
+.noticia-modal p{font-size:.95rem;color:#3c445a;white-space:pre-wrap;line-height:1.65}
+.noticia-modal-close{position:absolute;top:.8rem;right:.9rem;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(8,22,48,.35);border:none;color:var(--navy);font-size:1.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:1}
+.noticia-modal-close:hover{background:#fff}
 
 /* Especialidades */
 .esp-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);box-shadow:0 10px 28px rgba(8,22,48,.12);margin-bottom:2rem;background:#000}
@@ -448,6 +462,19 @@ footer a:hover{color:var(--gold);opacity:1}
   <div class="copy">© 2026 Instituto Comercial Alberto Valenzuela Llanos · INCOSAF San Fernando. Todos los derechos reservados.</div>
 </footer>
 
+<!-- Modal Noticia -->
+<div class="noticia-modal-bg" id="noticiaModalBg" onclick="if(event.target===this) window.__cerrarNoticia()">
+  <div class="noticia-modal" role="dialog" aria-modal="true" aria-labelledby="noticiaModalTitulo">
+    <button class="noticia-modal-close" onclick="window.__cerrarNoticia()" aria-label="Cerrar">✕</button>
+    <img id="noticiaModalImg" alt="" style="display:none">
+    <div class="body">
+      <div class="fecha" id="noticiaModalFecha"></div>
+      <h3 id="noticiaModalTitulo"></h3>
+      <p id="noticiaModalTexto"></p>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    BANNER ROTATIVO — imágenes del colegio
@@ -533,22 +560,43 @@ function fmtFecha(iso){
 }
 
 // ---------- Noticias ----------
+let noticiasCache = [];
+
+function abrirNoticia(id){
+  const n = noticiasCache.find(x=>x.id===id);
+  if(!n) return;
+  const img = document.getElementById('noticiaModalImg');
+  if(n.imagenBase64){ img.src = n.imagenBase64; img.style.display = ''; }
+  else{ img.style.display = 'none'; img.src = ''; }
+  document.getElementById('noticiaModalFecha').textContent = fmtFecha(n.fecha);
+  document.getElementById('noticiaModalTitulo').textContent = n.titulo || '';
+  document.getElementById('noticiaModalTexto').textContent = n.texto || '';
+  document.getElementById('noticiaModalBg').classList.add('open');
+}
+function cerrarNoticia(){
+  document.getElementById('noticiaModalBg').classList.remove('open');
+}
+window.__abrirNoticia = abrirNoticia;
+window.__cerrarNoticia = cerrarNoticia;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarNoticia(); });
+
 const noticiasQ = query(collection(db,'noticias'), orderBy('creadoEn','desc'));
 onSnapshot(noticiasQ, snap=>{
   const grid = document.getElementById('noticiasGrid');
   const empty = document.getElementById('noticiasEmpty');
   if(!grid) return;
-  const noticias = snap.docs.map(d=>d.data());
-  empty.style.display = noticias.length ? 'none' : '';
-  grid.innerHTML = noticias.map(n=>`
-    <article class="noticia-card">
+  noticiasCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  empty.style.display = noticiasCache.length ? 'none' : '';
+  grid.innerHTML = noticiasCache.map(n=>`
+    <button type="button" class="noticia-card" onclick="window.__abrirNoticia('${n.id}')">
       ${n.imagenBase64 ? `<img src="${n.imagenBase64}" alt="">` : ''}
       <div class="body">
         <div class="fecha">${fmtFecha(n.fecha)}</div>
         <h3>${escapeHtml(n.titulo||'')}</h3>
         <p>${escapeHtml(n.texto||'')}</p>
+        <span class="leer-mas">Leer más →</span>
       </div>
-    </article>
+    </button>
   `).join('');
 }, err=>console.error('No se pudieron cargar las noticias', err));
 
