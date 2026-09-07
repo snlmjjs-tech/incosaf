@@ -557,6 +557,9 @@ footer a:hover{color:var(--gold);opacity:1}
 
   function ocultarTooltip(){
     tooltip.style.display = 'none';
+  }
+  function marcarTooltipVisto(){
+    ocultarTooltip();
     try{ localStorage.setItem('incosafin_tooltip_visto', '1'); }catch(e){}
   }
 
@@ -566,7 +569,7 @@ footer a:hover{color:var(--gold);opacity:1}
     setTimeout(()=>{ if(!abierto) tooltip.style.display = ''; }, 1500);
     setTimeout(ocultarTooltip, 15000);
   }
-  tooltipClose.addEventListener('click', (e)=>{ e.stopPropagation(); ocultarTooltip(); });
+  tooltipClose.addEventListener('click', (e)=>{ e.stopPropagation(); marcarTooltipVisto(); });
 
   fab.addEventListener('click', ()=>{
     ocultarTooltip();
