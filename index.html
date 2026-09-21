@@ -132,7 +132,7 @@ section{padding:4rem 1.25rem}
 .noticia-modal-close{position:absolute;top:.8rem;right:.9rem;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(8,22,48,.35);border:none;color:var(--navy);font-size:1.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:1}
 .noticia-modal-close:hover{background:#fff}
 
-/* Chat INCOSAFIN */
+/* Chat INCOSAFITO */
 .chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:64px;height:64px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 8px 24px rgba(8,22,48,.35);cursor:pointer;z-index:80;padding:0;overflow:hidden}
 .chat-fab img{width:100%;height:100%;object-fit:cover;display:block}
 .chat-panel{position:fixed;bottom:6.5rem;right:1.5rem;width:340px;max-width:calc(100vw - 2rem);height:460px;max-height:70vh;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(8,22,48,.35);display:none;flex-direction:column;overflow:hidden;z-index:81}
@@ -497,19 +497,19 @@ footer a:hover{color:var(--gold);opacity:1}
   </div>
 </div>
 
-<!-- Chat INCOSAFIN -->
+<!-- Chat INCOSAFITO -->
 <div class="chat-tooltip" id="chatTooltip" style="display:none">
-  ¡Pruébame! Soy INCOSAFIN, hazme una pregunta 👋
+  ¡Pruébame! Soy INCOSAFITO, hazme una pregunta 👋
   <button type="button" class="tooltip-close" id="chatTooltipClose" aria-label="Cerrar">✕</button>
 </div>
-<button class="chat-fab" id="chatFab" aria-label="Abrir chat con INCOSAFIN">
-  <img src="img/incosafin.png" alt="INCOSAFIN">
+<button class="chat-fab" id="chatFab" aria-label="Abrir chat con INCOSAFITO">
+  <img src="img/incosafin.png" alt="INCOSAFITO">
 </button>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-head">
     <img src="img/incosafin.png" alt="">
     <div>
-      <div class="title">INCOSAFIN</div>
+      <div class="title">INCOSAFITO</div>
       <div class="sub">Asistente virtual INCOSAF</div>
     </div>
     <button class="chat-close" id="chatClose" aria-label="Cerrar chat">✕</button>
@@ -523,7 +523,7 @@ footer a:hover{color:var(--gold);opacity:1}
 
 <script>
 /* ============================================================
-   CHAT INCOSAFIN — asistente conectado a Gemini vía Cloudflare
+   CHAT INCOSAFITO — asistente conectado a Gemini vía Cloudflare
    Worker (el Worker guarda la clave de Gemini de forma segura;
    esta página nunca la ve).
    ============================================================ */
@@ -573,7 +573,7 @@ footer a:hover{color:var(--gold);opacity:1}
     panel.classList.toggle('open', abierto);
     if(abierto && !saludado){
       saludado = true;
-      agregarMensaje('¡Hola! Soy INCOSAFIN 👋 Pregúntame sobre horarios, especialidades, documentos o cómo contactar al colegio.', 'bot');
+      agregarMensaje('¡Hola! Soy INCOSAFITO 👋 Pregúntame sobre horarios, especialidades, documentos o cómo contactar al colegio.', 'bot');
     }
   });
   closeBtn.addEventListener('click', ()=>{
