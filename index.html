@@ -79,15 +79,14 @@ nav .wrap{max-width:var(--max);margin:0 auto;padding:.7rem 1.25rem;display:flex;
 
 /* Banner rotativo de fondo en el héroe */
 .slides{position:absolute;inset:0;z-index:0}
-.slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1);transition:opacity 1.4s ease,transform 7s ease-out}
-.slides img.on{opacity:.55;transform:scale(1.08)}
+.slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1);transition:opacity 1.4s ease,transform 3.4s ease-out}
+.slides img.on{opacity:.55;transform:scale(1.06)}
 .hero::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(14,34,71,.4),rgba(8,22,48,.62));z-index:1;pointer-events:none}
 .hero .wrap{position:relative;z-index:2}
 .dots{position:absolute;bottom:1.3rem;left:50%;transform:translateX(-50%);display:flex;gap:.45rem;z-index:3}
 .dots button{width:26px;height:4px;border-radius:999px;border:none;background:rgba(255,255,255,.35);cursor:pointer;padding:0;position:relative;overflow:hidden}
 .dots button .prog{position:absolute;inset:0;background:var(--gold);transform-origin:left;transform:scaleX(0)}
-.dots button.on .prog{animation:dotFill var(--interval,6.5s) linear forwards}
-.hero.carrusel-pausado .dots button.on .prog{animation-play-state:paused}
+.dots button.on .prog{animation:dotFill var(--interval,3s) linear forwards}
 @keyframes dotFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
 /* Vista previa Instagram */
@@ -696,8 +695,7 @@ footer a:hover{color:var(--gold);opacity:1}
    ============================================================ */
 function crearCarrusel({cont, dots, intervalMs}){
   if(!cont) return;
-  let idx = 0, timer = null, pausado = false;
-  const hero = cont.closest('.hero');
+  let idx = 0, timer = null;
 
   function fotos(){ return Array.from(cont.querySelectorAll('img')); }
 
@@ -711,20 +709,7 @@ function crearCarrusel({cont, dots, intervalMs}){
 
   function reiniciar(){
     clearInterval(timer);
-    if(pausado) return;
     timer = setInterval(()=> mostrar(idx+1), intervalMs);
-  }
-
-  function pausar(){
-    pausado = true;
-    clearInterval(timer);
-    if(hero) hero.classList.add('carrusel-pausado');
-  }
-
-  function reanudar(){
-    pausado = false;
-    if(hero) hero.classList.remove('carrusel-pausado');
-    reiniciar();
   }
 
   function iniciar(){
@@ -743,15 +728,6 @@ function crearCarrusel({cont, dots, intervalMs}){
     reiniciar();
   }
 
-  // Pausa al pasar el mouse o si la pestaña no está visible
-  if(hero){
-    hero.addEventListener('mouseenter', pausar);
-    hero.addEventListener('mouseleave', reanudar);
-  }
-  document.addEventListener('visibilitychange', ()=>{
-    if(document.hidden) pausar(); else reanudar();
-  });
-
   // Esperar a que las imágenes carguen o fallen antes de iniciar
   window.addEventListener('load', iniciar);
   return { iniciar };
@@ -760,7 +736,7 @@ function crearCarrusel({cont, dots, intervalMs}){
 window.__heroCarrusel = crearCarrusel({
   cont: document.getElementById('slides'),
   dots: document.getElementById('dots'),
-  intervalMs: 6500
+  intervalMs: 3000
 });
 </script>
 
