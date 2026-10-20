@@ -146,12 +146,12 @@ section{padding:5.5rem 1.25rem}
 .noticia-modal-close:hover{background:#fff}
 
 /* Chat INCOSAFITO */
-.chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:64px;height:64px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 4px 14px rgba(8,22,48,.18);cursor:pointer;z-index:80;padding:0;overflow:hidden;transition:transform .2s var(--ease-spring);animation:chatBreathe 3.2s ease-in-out infinite}
+.chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 4px 14px rgba(8,22,48,.18);cursor:pointer;z-index:80;padding:0;overflow:hidden;transition:transform .2s var(--ease-spring);animation:chatBreathe 3.2s ease-in-out infinite}
 .chat-fab:hover,.chat-fab:active{animation-play-state:paused}
 .chat-fab:active{transform:scale(.94)}
 @keyframes chatBreathe{0%,100%{box-shadow:0 4px 14px rgba(8,22,48,.18)}50%{box-shadow:0 4px 22px rgba(255,201,19,.55)}}
 .chat-fab img{width:100%;height:100%;object-fit:cover;display:block}
-.chat-panel{position:fixed;bottom:6.5rem;right:1.5rem;width:340px;max-width:calc(100vw - 2rem);height:460px;max-height:70vh;background:#fff;border-radius:var(--radius-card);border:1px solid var(--line);box-shadow:0 8px 32px rgba(8,22,48,.16);display:flex;flex-direction:column;overflow:hidden;z-index:81;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(18px) scale(.96);transform-origin:bottom right;transition:opacity .25s ease,transform .3s var(--ease-spring)}
+.chat-panel{position:fixed;bottom:7.5rem;right:1.5rem;width:340px;max-width:calc(100vw - 2rem);height:460px;max-height:70vh;background:#fff;border-radius:var(--radius-card);border:1px solid var(--line);box-shadow:0 8px 32px rgba(8,22,48,.16);display:flex;flex-direction:column;overflow:hidden;z-index:81;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(18px) scale(.96);transform-origin:bottom right;transition:opacity .25s ease,transform .3s var(--ease-spring)}
 .chat-panel.open{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0) scale(1)}
 .chat-head{background:var(--navy);color:#fff;padding:.9rem 1rem;display:flex;align-items:center;gap:.7rem}
 .chat-head img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
@@ -168,11 +168,11 @@ section{padding:5.5rem 1.25rem}
 .chat-form input:focus{outline:2px solid var(--gold);border-color:var(--gold-soft)}
 .chat-form button{background:var(--navy);color:#fff;border:none;border-radius:var(--radius-pill);padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-size:.85rem}
 .chat-form button:disabled{opacity:.6;cursor:default}
-.chat-tooltip{position:fixed;bottom:2rem;right:6rem;max-width:200px;background:#fff;color:var(--navy);padding:.7rem .9rem;border-radius:16px;font-size:.85rem;font-weight:700;line-height:1.35;box-shadow:0 4px 16px rgba(8,22,48,.16);z-index:79;animation:chatTooltipPop .3s ease}
+.chat-tooltip{position:fixed;bottom:2.3rem;right:7rem;max-width:200px;background:#fff;color:var(--navy);padding:.7rem .9rem;border-radius:16px;font-size:.85rem;font-weight:700;line-height:1.35;box-shadow:0 4px 16px rgba(8,22,48,.16);z-index:79;animation:chatTooltipPop .3s ease}
 .chat-tooltip::after{content:'';position:absolute;top:50%;right:-7px;transform:translateY(-50%);border-width:7px 0 7px 7px;border-style:solid;border-color:transparent transparent transparent #fff}
 .chat-tooltip .tooltip-close{position:absolute;top:-8px;right:-8px;background:var(--navy);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:.7rem;line-height:1;cursor:pointer}
 @keyframes chatTooltipPop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:480px){.chat-panel{right:1rem;bottom:5.5rem}.chat-fab{right:1rem;bottom:1rem}.chat-tooltip{right:5rem;bottom:1.8rem;max-width:160px}}
+@media(max-width:480px){.chat-panel{right:1rem;bottom:6.2rem}.chat-fab{right:1rem;bottom:1rem;width:72px;height:72px}.chat-tooltip{right:5.8rem;bottom:1.9rem;max-width:160px}}
 
 /* Especialidades */
 .esp-video{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius-card);overflow:hidden;border:1px solid var(--line);margin-bottom:2rem;background:#000}
