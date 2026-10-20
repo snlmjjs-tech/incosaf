@@ -603,12 +603,14 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
 
 <script>
 /* ============================================================
-   CHAT INCOSAFITO — respuestas instantáneas por palabras clave,
-   sin depender de ningún servicio de IA externo (sin red, sin
-   demora). Si una pregunta no calza con ningún tema conocido,
-   sugiere contactar directamente al colegio.
+   CHAT INCOSAFITO — híbrido: responde al instante (sin red) para
+   los temas simples y conocidos; si la pregunta no calza con
+   ninguno, recién ahí consulta a Gemini (vía Cloudflare Worker)
+   con la base de conocimiento institucional completa.
    ============================================================ */
 (function(){
+  const WORKER_URL = 'https://incosafin-chat.anglosaf.workers.dev/';
+
   function normalizar(s){
     return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
   }
@@ -624,15 +626,15 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
     },
     {
       palabras: ['telefono', 'numero', 'llam', 'contact'],
-      respuesta: 'Puedes llamarnos al 72 2847263 ☎️, o escribirnos a lissette.maldonado@slepcolchagua.cl'
+      respuesta: 'Puedes llamarnos a los teléfonos 72 284 2263 o 72 284 7262 ☎️'
     },
     {
-      palabras: ['correo', 'email', 'mail', 'escribir'],
-      respuesta: 'Nuestro correo de contacto es lissette.maldonado@slepcolchagua.cl ✉️'
+      palabras: ['rbd'],
+      respuesta: 'El RBD del establecimiento es 2444-9.'
     },
     {
       palabras: ['especialidad', 'carrera', 'que se estudia', 'técnico profesional', 'tecnico profesional'],
-      respuesta: 'Tenemos tres especialidades técnico-profesionales: Contabilidad, Administración, y Conectividad y Redes. Puedes ver más en la sección "Especialidades" de esta página. 📊'
+      respuesta: 'Tenemos cuatro especialidades técnico-profesionales: Contabilidad; Administración de Empresas mención Logística; Administración de Empresas mención Recursos Humanos; y Conectividad y Redes. Puedes ver más en la sección "Especialidades" de esta página. 📊'
     },
     {
       palabras: ['documento', 'reglamento', 'convivencia', 'evaluacion', 'proyecto educativo', 'pei'],
@@ -651,16 +653,12 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
       respuesta: 'Síguenos en Instagram @incosaf.oficial y en YouTube @incosaf14 📸'
     },
     {
-      palabras: ['fundacion', 'historia', 'cuando se fundo', 'cuantos años', 'desde cuando'],
+      palabras: ['fundacion', 'cuando se fundo', 'cuantos años', 'desde cuando'],
       respuesta: 'El INCOSAF (Instituto Comercial Alberto Valenzuela Llanos) fue fundado el 30 de enero de 1964 — ¡llevamos más de 60 años formando técnicos! 🎓'
     },
     {
       palabras: ['dependencia', 'slep', 'quien administra'],
-      respuesta: 'Dependemos del Servicio Local de Educación Pública (SLEP) Colchagua.'
-    },
-    {
-      palabras: ['nivel', 'curso', 'que cursos', 'basica', 'media'],
-      respuesta: 'Impartimos desde 1° a 4° Medio, en modalidad Técnico Profesional. 📚'
+      respuesta: 'Dependemos del Servicio Local de Educación Pública de Colchagua (SLEP Colchagua).'
     },
     {
       palabras: ['hola', 'buenas', 'buenos dias', 'buenas tardes', 'buenas noches'],
@@ -679,7 +677,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
         return tema.respuesta;
       }
     }
-    return 'No tengo esa información todavía. Te sugiero contactar directamente al colegio: 72 2847263 o lissette.maldonado@slepcolchagua.cl 🙂';
+    return null;
   }
 
   const fab = document.getElementById('chatFab');
@@ -693,6 +691,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
   const tooltipClose = document.getElementById('chatTooltipClose');
   let abierto = false;
   let saludado = false;
+  let historial = [];
 
   function agregarMensaje(texto, rol){
     const div = document.createElement('div');
@@ -733,19 +732,69 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); })
     panel.classList.remove('open');
   });
 
-  form.addEventListener('submit', (e)=>{
+  form.addEventListener('submit', async (e)=>{
     e.preventDefault();
     const texto = input.value.trim();
     if(!texto) return;
     agregarMensaje(texto, 'user');
+    const historialPrevio = historial.slice();
+    historial.push({ role:'user', text:texto });
     input.value = '';
     sendBtn.disabled = true;
-    const respuesta = respuestaLocal(texto);
-    setTimeout(()=>{
-      agregarMensaje(respuesta, 'bot');
+
+    const local = respuestaLocal(texto);
+    if(local !== null){
+      setTimeout(()=>{
+        agregarMensaje(local, 'bot');
+        historial.push({ role:'assistant', text:local });
+        sendBtn.disabled = false;
+        input.focus();
+      }, 300);
+      return;
+    }
+
+    // Sin coincidencia local: consultamos a Gemini con la base de conocimiento completa.
+    const loading = agregarMensaje('Escribiendo…', 'bot');
+    loading.classList.add('loading');
+    try{
+      const res = await fetch(WORKER_URL, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message: texto, history: historialPrevio })
+      });
+
+      const tipo = res.headers.get('Content-Type') || '';
+      if(!res.ok || tipo.includes('application/json')){
+        const data = await res.json().catch(()=>({}));
+        loading.remove();
+        const respuesta = data.error || 'No pude responder en este momento, intenta más tarde.';
+        agregarMensaje(respuesta, 'bot');
+      }else{
+        loading.remove();
+        const burbuja = agregarMensaje('', 'bot');
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let respuesta = '';
+        while(true){
+          const { done, value } = await reader.read();
+          if(done) break;
+          respuesta += decoder.decode(value, { stream:true });
+          burbuja.textContent = respuesta;
+          body.scrollTop = body.scrollHeight;
+        }
+        if(!respuesta.trim()){
+          burbuja.textContent = 'No tengo una confirmación actual de ese dato. Te recomiendo consultarlo en los canales oficiales del colegio.';
+        }
+        historial.push({ role:'assistant', text:respuesta });
+      }
+    }catch(err){
+      console.error(err);
+      loading.remove();
+      agregarMensaje('No pude conectarme en este momento. Intenta de nuevo más tarde o contáctanos directamente.', 'bot');
+    }finally{
       sendBtn.disabled = false;
       input.focus();
-    }, 350);
+    }
   });
 })();
 </script>
