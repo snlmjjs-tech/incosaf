@@ -145,6 +145,20 @@ section{padding:5.5rem 1.25rem}
 .noticia-modal-close{position:absolute;top:.8rem;right:.9rem;background:rgba(255,255,255,.92);box-shadow:0 2px 8px rgba(8,22,48,.35);border:none;color:var(--navy);font-size:1.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:1}
 .noticia-modal-close:hover{background:#fff}
 
+/* Aviso Intranet en construcción */
+.aviso-modal-bg{display:flex;position:fixed;inset:0;background:rgba(8,22,48,.75);z-index:100;align-items:center;justify-content:center;padding:1.25rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease}
+.aviso-modal-bg.open{opacity:1;visibility:visible;pointer-events:auto}
+.aviso-modal{position:relative;background:#fff;border-radius:var(--radius-card);max-width:380px;width:100%;overflow:hidden;box-shadow:0 8px 40px rgba(8,22,48,.2);transform:scale(.94) translateY(16px);transition:transform .35s var(--ease-spring);text-align:center}
+.aviso-modal-bg.open .aviso-modal{transform:scale(1) translateY(0)}
+.aviso-modal .top{background:var(--navy);padding:2rem 1.5rem 1.5rem;color:#fff}
+.aviso-modal .icon{font-size:2.6rem;margin-bottom:.6rem}
+.aviso-modal h3{font-family:'Zilla Slab',serif;font-size:1.2rem;color:var(--gold)}
+.aviso-modal .body{padding:1.5rem}
+.aviso-modal p{font-size:.92rem;color:#3c445a;line-height:1.5}
+.aviso-modal-close{position:absolute;top:.8rem;right:.9rem;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:1.2rem;width:32px;height:32px;border-radius:50%;cursor:pointer;z-index:1;transition:background .2s ease}
+.aviso-modal-close:hover{background:rgba(255,255,255,.3)}
+.aviso-modal .entendido{margin:0 1.5rem 1.5rem;width:calc(100% - 3rem)}
+
 /* Chat INCOSAFITO */
 .chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 4px 14px rgba(8,22,48,.18);cursor:pointer;z-index:80;padding:0;overflow:hidden;transition:transform .2s var(--ease-spring);animation:chatBreathe 3.2s ease-in-out infinite}
 .chat-fab:hover,.chat-fab:active{animation-play-state:paused}
@@ -284,7 +298,7 @@ footer a:hover{color:var(--gold);opacity:1}
       <a href="#documentos">Documentos</a>
       <a href="#comunidad">Comunidad</a>
       <a href="#contacto">Contacto</a>
-      <a class="btn-intranet" href="https://snlmjjs-tech.github.io/incosafinterno/" target="_blank" rel="noopener">🔐 Intranet</a>
+      <a class="btn-intranet" href="https://snlmjjs-tech.github.io/incosafinterno/" onclick="event.preventDefault(); window.__mostrarAviso()">🔐 Intranet</a>
     </div>
   </div>
 </nav>
@@ -322,7 +336,7 @@ footer a:hover{color:var(--gold);opacity:1}
       <p class="lead">Más de 60 años formando técnicos de nivel medio para San Fernando y la Región de O'Higgins. Una comunidad educativa con historia, identidad y futuro. #FamiliaComercialina</p>
       <div class="hero-ctas">
         <a class="btn btn-gold" href="#especialidades">Conoce nuestras especialidades</a>
-        <a class="btn btn-ghost" href="https://snlmjjs-tech.github.io/incosafinterno/" target="_blank" rel="noopener">Acceder a la Intranet</a>
+        <a class="btn btn-ghost" href="https://snlmjjs-tech.github.io/incosafinterno/" onclick="event.preventDefault(); window.__mostrarAviso()">Acceder a la Intranet</a>
       </div>
     </div>
     <div class="escudo">
@@ -534,6 +548,32 @@ footer a:hover{color:var(--gold);opacity:1}
     </div>
   </div>
 </div>
+
+<!-- Aviso Intranet en construcción -->
+<div class="aviso-modal-bg" id="avisoModalBg" onclick="if(event.target===this) window.__cerrarAviso()">
+  <div class="aviso-modal" role="dialog" aria-modal="true" aria-labelledby="avisoModalTitulo">
+    <div class="top">
+      <button class="aviso-modal-close" onclick="window.__cerrarAviso()" aria-label="Cerrar">✕</button>
+      <div class="icon">🚧</div>
+      <h3 id="avisoModalTitulo">Intranet en construcción</h3>
+    </div>
+    <div class="body">
+      <p>Estamos preparando esta sección (libro digital, matrículas y más). Vuelve a intentarlo pronto.</p>
+      <button class="btn btn-gold entendido" onclick="window.__cerrarAviso()">Entendido</button>
+    </div>
+  </div>
+</div>
+<script>
+function mostrarAviso(){
+  document.getElementById('avisoModalBg').classList.add('open');
+}
+function cerrarAviso(){
+  document.getElementById('avisoModalBg').classList.remove('open');
+}
+window.__mostrarAviso = mostrarAviso;
+window.__cerrarAviso = cerrarAviso;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); });
+</script>
 
 <!-- Chat INCOSAFITO -->
 <div class="chat-tooltip" id="chatTooltip" style="display:none">
