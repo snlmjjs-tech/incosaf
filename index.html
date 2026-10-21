@@ -166,6 +166,10 @@ section{padding:5.5rem 1.25rem}
 .aviso-item:active{transform:scale(.98)}
 .aviso-item .flecha{color:var(--gold-soft);font-weight:800;flex-shrink:0}
 .aviso-item .flecha.estado{color:#5a6480;font-weight:600;font-size:.82rem;font-style:italic}
+.aviso-clave-form{display:flex;flex-direction:column;gap:.8rem}
+.aviso-clave-form input{padding:.75rem .9rem;border:1.5px solid var(--line);border-radius:8px;font-size:.95rem;font-family:inherit;text-align:center}
+.aviso-clave-form input:focus{outline:2px solid var(--gold);border-color:var(--gold-soft)}
+.aviso-clave-error{color:#c4302b;font-size:.85rem;font-weight:700;text-align:center}
 
 /* Chat INCOSAFITO */
 .chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 4px 14px rgba(8,22,48,.18);cursor:pointer;z-index:80;padding:0;overflow:hidden;transition:transform .2s var(--ease-spring);animation:chatBreathe 3.2s ease-in-out infinite}
@@ -566,22 +570,36 @@ footer a:hover{color:var(--gold);opacity:1}
       <h3 id="avisoModalTitulo">Accesos Intranet</h3>
     </div>
     <div class="body">
-      <p>Elige a qué sistema quieres entrar:</p>
-      <a class="aviso-item" href="https://intranetinspectoria.incosafoficial.cl/" target="_blank" rel="noopener">
-        <span>📘 Intranet Inspectoría</span><span class="flecha">→</span>
-      </a>
-      <a class="aviso-item" href="https://matriculas.incosafoficial.cl/" target="_blank" rel="noopener">
-        <span>🎒 Matrículas</span><span class="flecha">→</span>
-      </a>
-      <button type="button" class="aviso-item" onclick="window.__mostrarUtpEnDesarrollo()">
-        <span>💻 Intranet UTP</span><span class="flecha" id="utpEstado">→</span>
-      </button>
+      <form class="aviso-clave-form" id="avisoClaveForm">
+        <p>Ingresa la clave de acceso:</p>
+        <input type="password" id="avisoClaveInput" placeholder="Clave" autocomplete="off">
+        <p class="aviso-clave-error" id="avisoClaveError" style="display:none">Clave incorrecta, intenta de nuevo.</p>
+        <button type="submit" class="btn btn-gold">Ingresar</button>
+      </form>
+      <div id="avisoMenu" style="display:none">
+        <p>Elige a qué sistema quieres entrar:</p>
+        <a class="aviso-item" href="https://intranetinspectoria.incosafoficial.cl/" target="_blank" rel="noopener">
+          <span>📘 Intranet Inspectoría</span><span class="flecha">→</span>
+        </a>
+        <a class="aviso-item" href="https://matriculas.incosafoficial.cl/" target="_blank" rel="noopener">
+          <span>🎒 Matrículas</span><span class="flecha">→</span>
+        </a>
+        <button type="button" class="aviso-item" onclick="window.__mostrarUtpEnDesarrollo()">
+          <span>💻 Intranet UTP</span><span class="flecha" id="utpEstado">→</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 <script>
+const CLAVE_INTRANET = 'incosaf777';
+
 function mostrarAviso(){
   document.getElementById('avisoModalBg').classList.add('open');
+  document.getElementById('avisoClaveForm').style.display = '';
+  document.getElementById('avisoMenu').style.display = 'none';
+  document.getElementById('avisoClaveInput').value = '';
+  document.getElementById('avisoClaveError').style.display = 'none';
   const estado = document.getElementById('utpEstado');
   estado.textContent = '→';
   estado.classList.remove('estado');
@@ -594,6 +612,18 @@ function mostrarUtpEnDesarrollo(){
   estado.textContent = 'En desarrollo';
   estado.classList.add('estado');
 }
+document.getElementById('avisoClaveForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const input = document.getElementById('avisoClaveInput');
+  if(input.value.trim() === CLAVE_INTRANET){
+    document.getElementById('avisoClaveForm').style.display = 'none';
+    document.getElementById('avisoMenu').style.display = '';
+  }else{
+    document.getElementById('avisoClaveError').style.display = '';
+    input.value = '';
+    input.focus();
+  }
+});
 window.__mostrarAviso = mostrarAviso;
 window.__cerrarAviso = cerrarAviso;
 window.__mostrarUtpEnDesarrollo = mostrarUtpEnDesarrollo;
