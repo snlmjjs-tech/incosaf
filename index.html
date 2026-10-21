@@ -157,10 +157,15 @@ section{padding:5.5rem 1.25rem}
 .aviso-modal .icon{font-size:2.6rem;margin-bottom:.6rem}
 .aviso-modal h3{font-family:'Zilla Slab',serif;font-size:1.2rem;color:var(--gold)}
 .aviso-modal .body{padding:1.5rem}
-.aviso-modal p{font-size:.92rem;color:#3c445a;line-height:1.5}
+.aviso-modal p{font-size:.92rem;color:#3c445a;line-height:1.5;margin-bottom:1rem}
 .aviso-modal-close{position:absolute;top:.8rem;right:.9rem;background:rgba(255,255,255,.18);border:none;color:#fff;font-size:1.2rem;width:32px;height:32px;border-radius:50%;cursor:pointer;z-index:1;transition:background .2s ease}
 .aviso-modal-close:hover{background:rgba(255,255,255,.3)}
-.aviso-modal .entendido{margin:0 1.5rem 1.5rem;width:calc(100% - 3rem)}
+.aviso-item{display:flex;align-items:center;justify-content:space-between;gap:.8rem;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.9rem 1.1rem;text-decoration:none;color:var(--navy);font-weight:700;font-size:.95rem;font-family:inherit;cursor:pointer;margin-bottom:.7rem;transition:border-color .2s ease,transform .2s var(--ease-spring);text-align:left}
+.aviso-item:last-child{margin-bottom:0}
+.aviso-item:hover{border-color:var(--gold-soft)}
+.aviso-item:active{transform:scale(.98)}
+.aviso-item .flecha{color:var(--gold-soft);font-weight:800;flex-shrink:0}
+.aviso-item .flecha.estado{color:#5a6480;font-weight:600;font-size:.82rem;font-style:italic}
 
 /* Chat INCOSAFITO */
 .chat-fab{position:fixed;bottom:1.5rem;right:1.5rem;width:84px;height:84px;border-radius:50%;background:#fff;border:3px solid var(--gold);box-shadow:0 4px 14px rgba(8,22,48,.18);cursor:pointer;z-index:80;padding:0;overflow:hidden;transition:transform .2s var(--ease-spring);animation:chatBreathe 3.2s ease-in-out infinite}
@@ -552,29 +557,46 @@ footer a:hover{color:var(--gold);opacity:1}
   </div>
 </div>
 
-<!-- Aviso Intranet en construcción -->
+<!-- Menú de accesos Intranet -->
 <div class="aviso-modal-bg" id="avisoModalBg" onclick="if(event.target===this) window.__cerrarAviso()">
   <div class="aviso-modal" role="dialog" aria-modal="true" aria-labelledby="avisoModalTitulo">
     <div class="top">
       <button class="aviso-modal-close" onclick="window.__cerrarAviso()" aria-label="Cerrar">✕</button>
-      <div class="icon">🚧</div>
-      <h3 id="avisoModalTitulo">Intranet en construcción</h3>
+      <div class="icon">🔐</div>
+      <h3 id="avisoModalTitulo">Accesos Intranet</h3>
     </div>
     <div class="body">
-      <p>Estamos preparando esta sección (libro digital, matrículas y más). Vuelve a intentarlo pronto.</p>
-      <button class="btn btn-gold entendido" onclick="window.__cerrarAviso()">Entendido</button>
+      <p>Elige a qué sistema quieres entrar:</p>
+      <a class="aviso-item" href="https://intranetinspectoria.incosafoficial.cl/" target="_blank" rel="noopener">
+        <span>📘 Intranet Inspectoría</span><span class="flecha">→</span>
+      </a>
+      <a class="aviso-item" href="https://matriculas.incosafoficial.cl/" target="_blank" rel="noopener">
+        <span>🎒 Matrículas</span><span class="flecha">→</span>
+      </a>
+      <button type="button" class="aviso-item" onclick="window.__mostrarUtpEnDesarrollo()">
+        <span>💻 Intranet UTP</span><span class="flecha" id="utpEstado">→</span>
+      </button>
     </div>
   </div>
 </div>
 <script>
 function mostrarAviso(){
   document.getElementById('avisoModalBg').classList.add('open');
+  const estado = document.getElementById('utpEstado');
+  estado.textContent = '→';
+  estado.classList.remove('estado');
 }
 function cerrarAviso(){
   document.getElementById('avisoModalBg').classList.remove('open');
 }
+function mostrarUtpEnDesarrollo(){
+  const estado = document.getElementById('utpEstado');
+  estado.textContent = 'En desarrollo';
+  estado.classList.add('estado');
+}
 window.__mostrarAviso = mostrarAviso;
 window.__cerrarAviso = cerrarAviso;
+window.__mostrarUtpEnDesarrollo = mostrarUtpEnDesarrollo;
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarAviso(); });
 </script>
 
