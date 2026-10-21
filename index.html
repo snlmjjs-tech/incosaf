@@ -972,6 +972,7 @@ onSnapshot(fotosQ, snap=>{
   const cont = document.getElementById('slides');
   if(!cont) return;
   cont.querySelectorAll('img.dynamic-foto').forEach(im=>im.remove());
+  const fragmento = document.createDocumentFragment();
   snap.docs.forEach(d=>{
     const f = d.data();
     if(!f.imagenBase64) return;
@@ -979,8 +980,10 @@ onSnapshot(fotosQ, snap=>{
     img.className = 'dynamic-foto';
     img.alt = f.alt || '';
     img.src = f.imagenBase64;
-    cont.appendChild(img);
+    fragmento.appendChild(img);
   });
+  // Las fotos subidas desde el panel van primero (la más reciente, primera de todas).
+  cont.insertBefore(fragmento, cont.firstChild);
   if(window.__heroCarrusel) window.__heroCarrusel.iniciar();
 }, err=>console.error('No se pudieron cargar las fotos', err));
 </script>
