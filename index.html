@@ -875,7 +875,10 @@ function crearCarrusel({cont, dots, intervalMs}){
       b.onclick = ()=>{ mostrar(k); reiniciar(); };
       dots.appendChild(b);
     });
-    mostrar(0);
+    // Pequeña espera (dos frames) para que el navegador "pinte" el estado
+    // inicial antes de activar la primera foto, y así el zoom se vea
+    // animado desde el principio en vez de aparecer ya hecho.
+    requestAnimationFrame(()=> requestAnimationFrame(()=> mostrar(0)));
     reiniciar();
   }
 
