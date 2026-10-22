@@ -592,7 +592,13 @@ footer a:hover{color:var(--gold);opacity:1}
   </div>
 </div>
 <script>
-const CLAVE_INTRANET = 'incosaf777';
+const CLAVE_HASH = '04d84412f7497a16d44b9652a1a48ce9dc70432b0fa2edb90e41b4eaad1d50f0';
+
+async function sha256Hex(texto){
+  const datos = new TextEncoder().encode(texto);
+  const buffer = await crypto.subtle.digest('SHA-256', datos);
+  return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
 
 function mostrarAviso(){
   document.getElementById('avisoModalBg').classList.add('open');
@@ -612,10 +618,11 @@ function mostrarUtpEnDesarrollo(){
   estado.textContent = 'En desarrollo';
   estado.classList.add('estado');
 }
-document.getElementById('avisoClaveForm').addEventListener('submit', (e)=>{
+document.getElementById('avisoClaveForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const input = document.getElementById('avisoClaveInput');
-  if(input.value.trim() === CLAVE_INTRANET){
+  const hashIngresado = await sha256Hex(input.value.trim());
+  if(hashIngresado === CLAVE_HASH){
     document.getElementById('avisoClaveForm').style.display = 'none';
     document.getElementById('avisoMenu').style.display = '';
   }else{
